@@ -1,0 +1,42 @@
+{
+  "name": "unit_tests",
+  "version": "1.0.0",
+  "description": "Unit tests for project, ECSE 429",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --testTimeout=10000",
+    "test2": "jest --testTimeout=10000 --runInBand"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "await-exec": "^0.1.2",
+    "axios": "^0.21.0",
+    "express": "^4.17.1",
+    "fast-xml-parser": "^3.17.4",
+    "http": "0.0.1-security",
+    "jest-circus": "^26.6.1",
+    "libxmljs": "^0.19.7",
+    "net": "^1.0.2",
+    "reload": "^3.1.1",
+    "xml2js": "^0.4.23"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.5",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "concurrently": "^5.2.0",
+    "cross-env": "^7.0.2",
+    "jest": "^26.0.1",
+    "mocha": "^6.1.4",
+    "nodemon": "^1.19.0",
+    "prompt": "^1.0.0",
+    "supertest": "^5.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  }
+}

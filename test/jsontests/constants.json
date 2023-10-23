@@ -1,0 +1,38 @@
+{
+    "HOST": "http://localhost:4567",
+    "LOCALHOST": "127.0.0.1",
+    "PORT": 4567,
+    "DEFAULTCATEGORIES" : {
+        "categories": [
+            {
+                "id": "2",
+                "title": "Home",
+                "description": ""
+            },
+            {
+                "id": "1",
+                "title": "Office",
+                "description": ""
+            }
+        ]
+    },
+    "DEFAULTPROJECTS": {
+        "projects": [
+            {
+                "id": "1",
+                "title": "Office Work",
+                "completed": "false",
+                "active": "false",
+                "description": "",
+                "tasks": [
+                    {
+                        "id": "1"
+                    },
+                    {
+                        "id": "2"
+                    }
+                ]
+            }
+        ]
+    }
+}
