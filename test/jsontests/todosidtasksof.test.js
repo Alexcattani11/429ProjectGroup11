@@ -30,9 +30,9 @@ beforeAll(done => {
 
 beforeEach(async() => {
     
-    const validTodoTitle = "TODO TITLE";
+    const validTodoTitle = "Todo title";
     const validTodoDoneStatus = false;
-    const validTodoDescription = "DESCRIPTION OF TODO"
+    const validTodoDescription = "Description of todo"
 
     const todoResponse = await request(constants.HOST).post("/todos").send({
         title: validTodoTitle,
@@ -42,10 +42,10 @@ beforeEach(async() => {
 
     ourTodo = todoResponse.body;
 
-    const validProjectTitle = "PROJECT";
+    const validProjectTitle = "Project";
     const validProjectCompleted = false;
     const validProjectActive= false;
-    const validProjectDescription = "DESCRIPTION OF PROJECT"
+    const validProjectDescription = "Description of project"
 
     const projectResponse = await request(constants.HOST).post("/projects").send({
         title: validProjectTitle,
@@ -89,20 +89,15 @@ describe("/todos/:id/tasksof", () => {
             expect(response.body.projects.length).toEqual(0);
         });
 
-        // TODO ADD INVALID
     });
 
     describe("HEAD", () => {
-        // todo check time
         it("returns JSON as default", async() => {
             const response = await request(constants.HOST).head(`/todos/${ourTodo.id}/tasksof`).send();
 
             expect(response.statusCode).toEqual(200);
             expect(response.headers["content-type"]).toEqual("application/json");
         });
-
-        // TODO xml
-        //TODO ADD INVALID
     });
 
     describe("POST", () => {
