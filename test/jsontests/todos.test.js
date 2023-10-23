@@ -172,8 +172,8 @@ describe("/todos", () => {
 
     describe("POST", () => {
 
-        it("should update the title of a todo given a valid title", async() => {
-            const validTitle = "NEW TITLE";
+        it("should update the title of a todo", async() => {
+            const validTitle = "New test";
 
             const response = await request(constants.HOST).post(`/todos/${ourTodo.id}`).send({
                 title: validTitle
@@ -186,7 +186,7 @@ describe("/todos", () => {
             expect(response.body.description).toEqual(ourTodo.description);
         });
 
-        it("should update the donestatus of a todo given a valid status", async() => {
+        it("should update the donestatus of a todo", async() => {
             const validStatus = true;
 
             const response = await request(constants.HOST).post(`/todos/${ourTodo.id}`).send({
@@ -201,7 +201,7 @@ describe("/todos", () => {
         });
 
         it("should update the description of a todo", async() => {
-            const validDescription = "NEW DESCRIPTION";
+            const validDescription = "New description";
 
             const response = await request(constants.HOST).post(`/todos/${ourTodo.id}`).send({
                 description: validDescription
@@ -214,8 +214,7 @@ describe("/todos", () => {
             expect(response.body.description).toEqual(validDescription);
         });
 
-        // TODO actual check here
-        it("should update a todo's id with a valid id, but should not be the same if id already exists", async() => {
+        it("should update a todo's id with a valid id", async() => {
             const validId = 12345567;
 
             const response = await request(constants.HOST).post(`/todos/${ourTodo.id}`).send({
@@ -269,9 +268,9 @@ describe("/todos", () => {
         });
 
         it("should update multiple fields when all valid for a given todo", async() => {
-            const validTitle = "TITLE";
-            const validStatus = true;
-            const validDescription = "NEW DESCRIPTION";
+            const validTitle = "Title";
+            const validStatus = false;
+            const validDescription = "New description";
 
             const response = await request(constants.HOST).post(`/todos/${ourTodo.id}`).send({
                 title: validTitle,
@@ -289,7 +288,7 @@ describe("/todos", () => {
         it("should return an error when given an invalid id", async() => {
             const invalidId = -1; 
 
-            const expectedError = "No such todo entity instance with GUID or ID -1 found";
+            const expectedError = "No such todo entity found";
 
             const response = await request(constants.HOST).post(`/todos/${invalidId}`).send();
 
@@ -304,7 +303,7 @@ describe("/todos", () => {
         const defaultDescription = "";
 
         it("should update the title of a todo given a valid title, all others to default", async() => {
-            const validTitle = "NEW TITLE";
+            const validTitle = "New title";
 
             const response = await request(constants.HOST).put(`/todos/${ourTodo.id}`).send({
                 title: validTitle
@@ -317,9 +316,9 @@ describe("/todos", () => {
             expect(response.body.description).toEqual(defaultDescription);
         });
 
-        it("should update the donestatus of a todo given a valid status if there is a valid title, description to default", async() => {
+        it("should update the doneStatus of a todo given a valid status", async() => {
             const validStatus = true;
-            const validTitle = "NEW TITLE";
+            const validTitle = "New title";
 
             const response = await request(constants.HOST).put(`/todos/${ourTodo.id}`).send({
                 doneStatus: validStatus,
@@ -333,9 +332,9 @@ describe("/todos", () => {
             expect(response.body.description).toEqual(defaultDescription);
         });
 
-        it("should update the description of a todo if there is a valid title, doneStatus to default", async() => {
-            const validDescription = "NEW DESCRIPTION";
-            const validTitle = "NEW TITLE";
+        it("should update the description of a todo", async() => {
+            const validDescription = "New description";
+            const validTitle = "New title";
 
             const response = await request(constants.HOST).put(`/todos/${ourTodo.id}`).send({
                 description: validDescription,
@@ -349,10 +348,9 @@ describe("/todos", () => {
             expect(response.body.description).toEqual(validDescription);
         });
 
-        // TODO actual check here
-        it("should update a todo's id with a valid id, but should not be the same if id already exists, with title, default status and description", async() => {
-            const validId = 12345567;
-            const validTitle = "NEW TITLE";
+        it("should update a todo's id with a valid id", async() => {
+            const validId = 999;
+            const validTitle = "New title";
 
             const response = await request(constants.HOST).put(`/todos/${ourTodo.id}`).send({
                 id: validId,
@@ -393,9 +391,9 @@ describe("/todos", () => {
         });
 
         it("should not update other fields without a title", async() => {
-            const validId = 123;
+            const validId = 99;
             const validStatus = true;
-            const validDescription = "NEW DESCRIPTION";
+            const validDescription = "New description";
 
             const expectedError = "title : field is mandatory";
 
@@ -423,9 +421,9 @@ describe("/todos", () => {
         });
 
         it("should update multiple fields when all valid for a given todo", async() => {
-            const validTitle = "TITLE";
+            const validTitle = "Title";
             const validStatus = true;
-            const validDescription = "NEW DESCRIPTION";
+            const validDescription = "New description";
 
             const response = await request(constants.HOST).put(`/todos/${ourTodo.id}`).send({
                 title: validTitle,
@@ -443,7 +441,7 @@ describe("/todos", () => {
         it("should return an error when given an invalid id", async() => {
             const invalidId = -1; 
 
-            const expectedError = "Invalid GUID for -1 entity todo";
+            const expectedError = "Invalid for entity todo";
 
             const response = await request(constants.HOST).put(`/todos/${invalidId}`).send();
 
@@ -454,11 +452,10 @@ describe("/todos", () => {
 
     describe("DELETE", () => {
 
-        it("deletes a todo with a valid id", async() => {
+        it("deletes a todo with an id", async() => {
             const deleteResponse = await request(constants.HOST).delete(`/todos/${ourTodo.id}`);
             expect(deleteResponse.statusCode).toEqual(200);
             
-            // check that id is actually gone
             const expectedError = `Could not find an instance with todos/${ourTodo.id}`;
 
             const getResponse = await request(constants.HOST).get(`/todos/${ourTodo.id}`).send();
