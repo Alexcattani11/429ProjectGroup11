@@ -5,35 +5,28 @@ const constants = require("./constants.json");
 let ourTodo;
 let ourProject;
 
-// set up tests 
+//set up tests 
 beforeAll(done => {
-    // create server to listen to ports
+    //create server
     var server = net.createServer();
 
-    // we actually want this error because it means that something is running at the port
-    // that we want to listen to
+    //confirm jar is working
     server.once('error', function(err) {
         if (err.code === 'EADDRINUSE') {
-          // close the server
           server.close();
-          // callback to end beforeAll method, we have confirmed jar is working
           done();
         }
       });
       
-      // if server is able to listen at the port that means there's nothing running there
+      //make sure server is listening and indicate failure
       server.once('listening', function() {
-        // close the server
         server.close();
-        // throw error so this file of tests is cancelled, error will print and jest will
-        // indicate failure
         throw new Error("No instance running")
       });
       
-      // tell server to listen at port that should be running api
+      //tell server to listen
       server.listen(constants.PORT);
 });
-
 
 beforeEach(async() => {
     
