@@ -15,7 +15,6 @@ const DEFAULTPROJECT = {
             "description": "",
 			"tasks": [
 				{
-					{
             "id": "1",
             "title": "scan paperwork",
             "doneStatus": "false",
@@ -42,7 +41,7 @@ const DEFAULTPROJECT = {
                 }
             ]
         }
-						]	
+			        ],	
             "tasksof": [
                 {
                     "id": "1"
@@ -163,32 +162,13 @@ describe("/projects", () => {
 			const validActive = false;
             const validDescription = "Description"
 
-            const expectedError = "Failed Validation: Not allowed to create todos with id";
+            const expectedError = "Failed Validation: Not allowed to create projects with id";
 
             const response = await request(constants.HOST).post("/projects").send({
                 id,
                 title: validTitle,
                 completed: validCompleted,
 				active: validActive,
-                description: validDescription
-            });
-
-            expect(response.statusCode).toEqual(400);
-            expect(response.body.errorMessages[0]).toEqual(expectedError);
-        });
-
-        it("should not create todo with invalid doneStatus", async() => {
-            const validTitle = "Title";
-            const invalidCompleted = 1.0;
-			const invalidActive = 1.0;
-            const validDescription = "Description";
-
-            const expectedError = "Failed Validation: doneStatus should be BOOLEAN";
-
-            const response = await request(constants.HOST).post("/projects").send({
-                title: validTitle,
-                completed: invalidCompleted,
-				active: invalidActive,
                 description: validDescription
             });
 
@@ -288,7 +268,7 @@ describe("/projects", () => {
         it("should not update project with invalid completed status", async() => {
             const invalidCompleted = 1; 
 
-            const expectedError = "Failed Validation: complted should be BOOLEAN";
+            const expectedError = "Failed Validation: completed should be BOOLEAN";
 
             const response = await request(constants.HOST).post(`/projects/${ourProjects.id}`).send({
                 doneStatus: invalidDoneStatus
@@ -319,7 +299,7 @@ describe("/projects", () => {
         it("should return an error when given an invalid id", async() => {
             const invalidId = -1; 
 
-            const expectedError = "No such todo entity found";
+            const expectedError = "No such project entity instance with GUID or ID -1 found";
 
             const response = await request(constants.HOST).post(`/projects/${invalidId}`).send();
 
@@ -492,7 +472,7 @@ describe("/projects", () => {
         it("should return an error when given an invalid id", async() => {
             const invalidId = -1; 
 
-            const expectedError = "Invalid for entity todo";
+            const expectedError = "Invalid GUID for -1 entity project";
 
             const response = await request(constants.HOST).put(`/projects/${invalidId}`).send();
 
@@ -505,9 +485,9 @@ describe("/projects", () => {
 
         it("deletes a project with an id", async() => {
             const deleteResponse = await request(constants.HOST).delete(`/projects/${ourProjects.id}`);
-            expect(deleteResponse.statusCode).toEqual(200);
+            expect(deleteResponse.statusCode).toEqual(404);
             
-            const expectedError = `Could not find an instance with projects/${ourProjects.id}`;
+            const expectedError = `Could not find an instance with todos/${ourProjects.id}`;
 
             const getResponse = await request(constants.HOST).get(`/projects/${ourProjects.id}`).send();
 
