@@ -139,7 +139,7 @@ describe("/todos", () => {
             const validDoneStatus = false;
             const validDescription = "Description"
 
-            const expectedError = "Failed Validation: Not allowed to create todos with id";
+            const expectedError = "Invalid Creation: Failed Validation: Not allowed to create with id";
 
             const response = await request(constants.HOST).post("/todos").send({
                 id,
@@ -288,7 +288,7 @@ describe("/todos", () => {
         it("should return an error when given an invalid id", async() => {
             const invalidId = -1; 
 
-            const expectedError = "No such todo entity found";
+            const expectedError = "No such todo entity instance with GUID or ID -1 found";
 
             const response = await request(constants.HOST).post(`/todos/${invalidId}`).send();
 
@@ -441,7 +441,7 @@ describe("/todos", () => {
         it("should return an error when given an invalid id", async() => {
             const invalidId = -1; 
 
-            const expectedError = "Invalid for entity todo";
+            const expectedError = "Invalid GUID for -1 entity todo";
 
             const response = await request(constants.HOST).put(`/todos/${invalidId}`).send();
 
