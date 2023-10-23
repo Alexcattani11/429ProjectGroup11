@@ -34,7 +34,7 @@ beforeEach(async() => {
     const validTodoDoneStatus = false;
     const validTodoDescription = "DESCRIPTION OF TODO"
 
-    const todoResponse = await request(constants.HOST).post("/todos").send({
+    const todoResponse = await request(constants.HOST).post("/projects").send({
         title: validTodoTitle,
         doneStatus: validTodoDoneStatus,
         description: validTodoDescription
@@ -56,7 +56,7 @@ beforeEach(async() => {
 
     ourProject = projectResponse.body;
 
-    const postResponse = await request(constants.HOST).post(`/todos/${ourTodo.id}/tasksof`).send({
+    const postResponse = await request(constants.HOST).post(`/projects/${ourProject.id}/tasksof`).send({
                 id: ourProject.id
             });
 });
@@ -85,7 +85,7 @@ describe("/todos/:id/tasksof/:id", () => {
         it("should not delete the instance of the relationship named tasks between project and todo using the :id", async() => {
             const invalidId = -1; 
 
-            const expectedError = `Could not find any instances with todos/${ourTodo.id}/tasksof/${invalidId}`;
+            const expectedError = `Could not find any instances with projects/${ourTodo.id}/tasksof/${invalidId}`;
 
             const response = await request(constants.HOST).delete(`/projects/${ourProject.id}/tasks/${invalidId}`).send();
 
