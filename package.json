@@ -4,7 +4,7 @@
   "description": "Unit tests for project, ECSE 429",
   "main": "index.js",
   "scripts": {
-    "test": "jest --testTimeout=10000",
+    "test": "npx jest --testTimeout=10000",
     "test2": "jest --testTimeout=10000 --runInBand"
   },
   "author": "",
