@@ -4,7 +4,8 @@ Feature: View All Tasks
     So that I can have an overview of what I need to do
 
     Background:
-        Given the user has access to the To-Do List Manager
+        Given the application is running
+        And the following todos exist in the system:
 
     Scenario: Viewing all todos when logged in
         Given the user is logged in

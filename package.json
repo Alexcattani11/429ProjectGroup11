@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "await-exec": "^0.1.2",
-    "axios": "^0.21.0",
+    "axios": "^0.21.4",
     "express": "^4.17.1",
     "fast-xml-parser": "^3.17.4",
     "http": "0.0.1-security",

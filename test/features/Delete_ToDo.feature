@@ -5,7 +5,7 @@ Feature: Delete Todo
 
     Background:
         Given the application is running
-        And the following todos exist in the system
+        And the following todos exist in the system:
         | id | title          | doneStatus | description |
         | 1  | scan paperwork | false      |             |
         | 2  | file paperwork | false      |             |

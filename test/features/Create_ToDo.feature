@@ -5,15 +5,15 @@ Feature: Create ToDo
 
     Background: 
         Given the application is running
-        And the following todos exist in the system
-        | id | title          | doneStatus | description |
-        | 1  | scan paperwork | false      |             |
-        | 2  | file paperwork | false      |             |
+        And the following todos exist in the system:
+            | id | title          | doneStatus | description |
+            | 1  | Scan paperwork | false      |             |
+            | 2  | File paperwork | false      |             |
 
     Scenario Outline: Create a todo successfully
         Given the user is logged in
-        When the user creates a task with title "<task_title>" and description "<task_description>"
-        Then a new task with title "<task_title>" and description "<task_description>" is added to the to-do list
+        When the user creates a task with title "<title>" and description "<description>"
+        Then a new task with title "<title>" and description "<description>" is added to the to-do list
 
         Examples:
             | id | title          | doneStatus | description |
@@ -23,7 +23,7 @@ Feature: Create ToDo
 
     Scenario Outline: Creating a todo without a title
         Given the user is logged in
-        When the user attempts to create a task with no title but with description "<task_description>"
+        When the user attempts to create a task with no title but with description "<description>"
         Then an error message "Task title cannot be empty" is displayed
 
         Examples:
