@@ -1,4 +1,4 @@
-Feature: Mark Todo as Complete
+Feature: Change todo's title
     As a user
     I want to change my todo titles
     So that I can clearly distinguish the todo
