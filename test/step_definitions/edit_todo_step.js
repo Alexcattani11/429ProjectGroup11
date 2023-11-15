@@ -4,6 +4,11 @@ const assert = require('assert').strict;
 
 const apiBaseUrl = 'http://localhost:4567';
 
+Given('the application is running', async function () {
+    const response = await axios.get(`${apiBaseUrl}/api/status`);
+    assert.equal(response.status, 200);
+});
+
 Given('the todo with ID "{int}" exists and todo has title "{string}"', async function (id, title) {
     const response = await axios.get(`${apiBaseUrl}/todos/${id}`);
     assert.equal(response.data.title, title);
