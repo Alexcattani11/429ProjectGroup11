@@ -11,7 +11,7 @@ Feature: Mark Todo as Complete
         | 2  | file paperwork | false      |             |
 
     Scenario Outline: Successfully marking a todo as complete
-        Given the user is logged in
+        Given existing todos can be edited
         And the todo with ID "<id>" exists
         And todo has "<doneStatus>" of false
         When the user marks the todo with ID "<id>" as complete
@@ -24,7 +24,7 @@ Feature: Mark Todo as Complete
             | 2  | file paperwork | true       |             |
 
     Scenario Outline: Marking a non-existent todo as complete
-        Given the user is logged in
+        Given existing todos can be edited
         And no todo with ID "<id>" exists
         When the user attempts to mark the todo with ID "<id>" as complete
         Then an error message "Todo ID <id> not found" is displayed
@@ -35,7 +35,7 @@ Feature: Mark Todo as Complete
             | 2  | file paperwork | true       |             |
 
     Scenario Outline: Marking a todo that is already completed as complete
-        Given the user is logged in
+        Given existing todos can be edited
         And the todo with ID "<id>" exists
         And todo has "<doneStatus>" of true
         When the user attempts to mark the todo with ID "<id>" as complete

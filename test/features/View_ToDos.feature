@@ -6,13 +6,22 @@ Feature: View All Tasks
     Background:
         Given the application is running
         And the following todos exist in the system:
+            | id | title          | doneStatus | description |
+            | 1  | Scan paperwork | false      |             |
+            | 2  | File paperwork | false      |             |
 
-    Scenario: Viewing all todos when logged in
-        Given the user is logged in
+    Scenario: Viewing all todos
+        Given all todos can all be viewed
         When the user requests to view all todos
         Then a list of all todos should be displayed
 
-    Scenario: Trying to view todos without being logged in
-        Given the user is not logged in
-        When the user attempts to view all todos
-        Then an error message "User must be logged in to view todos" is displayed
+    Scenario: Viewing completed todos only
+        Given the user wants to view completed tasks
+        When the user requests to view todos with a "<doneStatus>" of true
+        Then only todos with a "<doneStatus>" of true should be displayed
+
+    Scenario: Viewing todos when the list is empty
+        Given there are no todos in the system
+        When the user requests to view all todos
+        Then the error message "There are no todos" should be displayed
+

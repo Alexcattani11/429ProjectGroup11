@@ -11,7 +11,7 @@ Feature: Change todo's title
         | 2  | file paperwork | false      |             |
 
     Scenario Outline: Successfully changing a todos title
-        Given the user is logged in
+        Given existing todos can be edited
         And the todo with ID "<id>" exists
         And todo has title "<title>"
         When the user changes the todo with ID "<id>" with new title
@@ -24,7 +24,7 @@ Feature: Change todo's title
             | 2  | file paperwork in office | true       |             |
 
     Scenario Outline: Changing a non-existent todos title
-        Given the user is logged in
+        Given existing todos can be edited
         And no todo with ID "<id>" exists
         When the user attempts change the todo with ID "<id>" with new title
         Then an error message "Todo ID <id> not found" is displayed
@@ -35,7 +35,7 @@ Feature: Change todo's title
             | 2  | file paperwork | true       |             |
 
     Scenario Outline: Changing a todo to not have a title
-        Given the user is logged in
+        Given existing todos can be edited
         And the todo with ID "<id>" exists
         And todo has title "<title>"
         When the user attempts to change the title "<title>" to an empty string

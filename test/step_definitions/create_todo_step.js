@@ -2,9 +2,10 @@ const { Given, When, Then } = require('@cucumber/cucumber');
 const axios = require('axios');
 const assert = require('assert').strict;
 
-const apiBaseUrl = 'http://localhost:4567'; // Replace with the correct base URL of your API
-
+const apiBaseUrl = 'http://localhost:4567'; 
+const MAX_TODOS = 100;
 let lastApiResponse;
+let totalTodos = 0;
 
 Given('the application is running', async function () {
     const response = await axios.get(`${apiBaseUrl}/api/status`);
@@ -18,26 +19,36 @@ Given('the following todos exist in the system:', async function (dataTable) {
             doneStatus: todo.doneStatus === 'true',
             description: todo.description
         });
+        totalTodos++;
     }
 });
 
-When('the user creates a task with title "{string}" and description "{string}"', async function (title, description) {
+Given('there is room for new todos', function () {
+    assert(totalTodos < MAX_TODOS);
+});
+
+Given('the maximum number of todos is reached', async function () {
+    while (totalTodos < MAX_TODOS) {
+        await axios.post(`${apiBaseUrl}/todos`, {
+            title: `Todo ${totalTodos + 1}`,
+            description: 'Auto-generated todo'
+        });
+        totalTodos++;
+    }
+});
+
+When('the user attempts to create a task with title "{string}" and description "{string}"', async function (title, description) {
     try {
         lastApiResponse = await axios.post(`${apiBaseUrl}/todos`, { title, description });
+        totalTodos++;
     } catch (error) {
         lastApiResponse = error.response;
     }
 });
 
-Then('a new task with title "{string}" and description "{string}" is added to the to-do list', function (title, description) {
-    assert.equal(lastApiResponse.status, 200); // Check if the response status is 200 (OK)
-    assert.equal(lastApiResponse.data.title, title);
-    assert.equal(lastApiResponse.data.description, description);
-});
-
-When('the user attempts to create a task with no title but with description "{string}"', async function (description) {
+When('the user attempts to create a task after reaching the maximum number of todos', async function () {
     try {
-        lastApiResponse = await axios.post(`${apiBaseUrl}/todos`, { title: '', description });
+        lastApiResponse = await axios.post(`${apiBaseUrl}/todos`, { title: 'Extra Todo', description: 'Extra Description' });
     } catch (error) {
         lastApiResponse = error.response;
     }
