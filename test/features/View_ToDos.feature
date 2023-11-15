@@ -24,4 +24,3 @@ Feature: View All Tasks
         Given there are no todos in the system
         When the user requests to view all todos
         Then the error message "There are no todos" should be displayed
-
