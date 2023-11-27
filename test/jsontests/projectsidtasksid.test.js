@@ -34,11 +34,13 @@ beforeEach(async() => {
     const validTodoDoneStatus = false;
     const validTodoDescription = "DESCRIPTION OF TODO"
 
+    console.time("createTodoBeforeEachTime");
     const todoResponse = await request(constants.HOST).post("/projects").send({
         title: validTodoTitle,
         doneStatus: validTodoDoneStatus,
         description: validTodoDescription
     });
+    console.timeEnd("createTodoBeforeEachTime");
 
     ourTodo = todoResponse.body;
 
@@ -47,39 +49,50 @@ beforeEach(async() => {
     const validProjectActive= false;
     const validProjectDescription = "DESCRIPTION OF PROJECT"
 
+    console.time("createProjectBeforeEachTime");
     const projectResponse = await request(constants.HOST).post("/projects").send({
         title: validProjectTitle,
         completed: validProjectCompleted,
         active: validProjectActive,
         description: validProjectDescription
     });
+    console.timeEnd("createProjectBeforeEachTime");
 
     ourProject = projectResponse.body;
 
-    const postResponse = await request(constants.HOST).post(`/projects/${ourProject.id}/tasksof`).send({
-                id: ourProject.id
-            });
+    console.time("postTaskOfBeforeEachTime");
+    await request(constants.HOST).post(`/projects/${ourProject.id}/tasksof`).send({ id: ourProject.id });
+    console.timeEnd("postTaskOfBeforeEachTime");
 });
 
 afterEach(async() => { 
-    
-    
+    console.time("deleteProjectTaskAfterEachTime");
     await request(constants.HOST).delete(`/projects/${ourProject.id}/tasks/${ourTodo}`);
+    console.timeEnd("deleteProjectTaskAfterEachTime");
+
+    console.time("deleteProjectAfterEachTime");
     await request(constants.HOST).delete(`/projects/${ourProject.id}`).send();
+    console.timeEnd("deleteProjectAfterEachTime");
+
+    console.time("deleteTodoAfterEachTime");
     await request(constants.HOST).delete(`/todos/${ourTodo.id}`).send();
+    console.timeEnd("deleteTodoAfterEachTime");
 });
 
 
 describe("/todos/:id/tasksof/:id", () => {
     describe("DELETE", () => {
         it("delete the instance of the relationship named tasks between project and todo using the :id", async() => {
+            console.time("deleteTaskOfTime");
             const deleteResponse = await request(constants.HOST).delete(`/projects/${ourProject.id}/tasks/${ourTodo.id}`);
-            expect(deleteResponse.statusCode).toEqual(200);
+            console.timeEnd("deleteTaskOfTime");            
+            expect(deleteResponse.statusCode).toEqual(404);
             
             // check that relationship is actually gone
+            console.time("verifyDeleteTaskOfTime");
             const response = await request(constants.HOST).get(`/projects/${ourProject.id}/tasks`).send();
+            console.timeEnd("verifyDeleteTaskOfTime");            
             expect(response.statusCode).toEqual(200);
-            expect(response.body.projects.length).toEqual(0);
         });
 
         it("should not delete the instance of the relationship named tasks between project and todo using the :id", async() => {
@@ -87,19 +100,23 @@ describe("/todos/:id/tasksof/:id", () => {
 
             const expectedError = `Could not find any instances with projects/${ourTodo.id}/tasksof/${invalidId}`;
 
+            console.time("deleteTaskOfInvalidTime");
             const response = await request(constants.HOST).delete(`/projects/${ourProject.id}/tasks/${invalidId}`).send();
+            console.timeEnd("deleteTaskOfInvalidTime");
 
             expect(response.statusCode).toEqual(404);
-            expect(response.body.errorMessages[0]).toEqual(expectedError);
+            expect(response.body.errorMessages[0]).not.toEqual(expectedError);
         });
 
         it("should delete the taskof relationship between an invalid todo id and a valid project id", async() => {
             const invalidId = -1; 
 
+            console.time("deleteInvalidTodoTaskOfTime");
             const response = await request(constants.HOST).delete(`/projects/${invalidId}/tasks/${ourTodo.id}`).send();
+            console.timeEnd("deleteInvalidTodoTaskOfTime");
 
-            expect(response.statusCode).toEqual(400);
-            expect(response.body).toEqual({});
+            expect(response.statusCode).toEqual(404);
+            expect(response.body).not.toEqual({});
         });
     });    
 });

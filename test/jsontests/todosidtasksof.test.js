@@ -34,11 +34,14 @@ beforeEach(async() => {
     const validTodoDoneStatus = false;
     const validTodoDescription = "Description of todo"
 
+    console.time("postTodoBeforeEach");
     const todoResponse = await request(constants.HOST).post("/todos").send({
         title: validTodoTitle,
         doneStatus: validTodoDoneStatus,
         description: validTodoDescription
     });
+    console.timeEnd("postTodoBeforeEach");
+    ourTodo = todoResponse.body;
 
     ourTodo = todoResponse.body;
 
@@ -47,21 +50,26 @@ beforeEach(async() => {
     const validProjectActive= false;
     const validProjectDescription = "Description of project"
 
+    console.time("postProjectBeforeEach");
     const projectResponse = await request(constants.HOST).post("/projects").send({
         title: validProjectTitle,
         completed: validProjectCompleted,
         active: validProjectActive,
         description: validProjectDescription
     });
+    console.timeEnd("postProjectBeforeEach");
 
     ourProject = projectResponse.body;
 });
 
 afterEach(async() => { 
-    
-    
+    console.time("deleteProjectAfterEach");
     await request(constants.HOST).delete(`/projects/${ourProject.id}`).send();
+    console.timeEnd("deleteProjectAfterEach");
+
+    console.time("deleteTodoAfterEach");
     await request(constants.HOST).delete(`/todos/${ourTodo.id}`).send();
+    console.timeEnd("deleteTodoAfterEach");
 });
 
 describe("/todos/:id/tasksof", () => {
@@ -69,12 +77,16 @@ describe("/todos/:id/tasksof", () => {
 
         it("returns tasks for related project and todo", async() => {
              
+            console.time("postTasksof");
             const postResponse = await request(constants.HOST).post(`/todos/${ourTodo.id}/tasksof`).send({
                 id: ourProject.id
             });
+            console.timeEnd("postTasksof");
             expect(postResponse.statusCode).toEqual(201);
 
+            console.time("getTasksofRelated");
             const response = await request(constants.HOST).get(`/todos/${ourTodo.id}/tasksof`).send();
+            console.timeEnd("getTasksofRelated");            
             expect(response.statusCode).toEqual(200);
             expect(response.body.projects[0].id).toEqual(ourProject.id);
             expect(response.body.projects[0].title).toEqual(ourProject.title);
@@ -84,7 +96,9 @@ describe("/todos/:id/tasksof", () => {
         });
 
         it("returns no tasks for unrelated project and todo", async() => {
+            console.time("getTasksofUnrelated");
             const response = await request(constants.HOST).get(`/todos/${ourTodo.id}/tasksof`).send();
+            console.timeEnd("getTasksofUnrelated");
             expect(response.statusCode).toEqual(200);
             expect(response.body.projects.length).toEqual(0);
         });

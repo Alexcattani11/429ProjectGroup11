@@ -29,10 +29,12 @@ describe("/docs", () => {
 
     describe("GET", () => {
         it("returns nothing with no entries", async() => {
-           const response = await request(constants.HOST).get("/docs").send();
-           expect(response.statusCode).toEqual(200);
+          console.time("getDocTime");
+          const response = await request(constants.HOST).get("/docs").send();
+          console.timeEnd("getDocTime");
+          expect(response.statusCode).toEqual(200);
            
-           expect(response.type).toEqual("text/html");
+          expect(response.type).toEqual("text/html");
         });
     });
 });
