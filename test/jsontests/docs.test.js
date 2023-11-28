@@ -1,6 +1,9 @@
 const net = require("net");
 const request = require("supertest");
 const constants = require("./constants.json");
+const fs = require('fs');
+
+const results = [];
 
 //set up tests 
 beforeAll(done => {
@@ -29,12 +32,28 @@ describe("/docs", () => {
 
     describe("GET", () => {
         it("returns nothing with no entries", async() => {
-          console.time("getDocTime");
+
+          const startTime = new Date();
           const response = await request(constants.HOST).get("/docs").send();
-          console.timeEnd("getDocTime");
+          const endTime = new Date();
+
+          results.push({
+            testName: "GET Return Nothing",
+            duration: endTime - startTime,
+            statusCode: response.statusCode,
+            objectCount: 1
+          });
+
           expect(response.statusCode).toEqual(200);
            
           expect(response.type).toEqual("text/html");
         });
     });
+});
+
+afterAll(() => {
+  let csvContent = "Test Name,Duration (ms),Status Code,Object Count\n" +
+      results.map(e => `${e.testName},${e.duration},${e.statusCode},${e.objectCount}`).join("\n");
+
+  fs.writeFileSync('performance_results_docs.test.csv', csvContent);
 });

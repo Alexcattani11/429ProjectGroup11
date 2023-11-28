@@ -1,8 +1,10 @@
 const net = require("net");
 const request = require("supertest");
 const constants = require("./constants.json");
+const fs = require('fs');
 
 let ourProject;
+const results = [];
 
 //set up tests 
 beforeAll(done => {
@@ -34,23 +36,19 @@ beforeEach(async() => {
     const validCompleted = true;
     const validDescription = "DESCRIPTION OF PROJECT"
 
-    console.time("createProjectBeforeEachTime");
     const response = await request(constants.HOST).post("/projects").send({
         title: validTitle,
         active: validActive,
         completed: validCompleted,
         description: validDescription
     });
-    console.timeEnd("createProjectBeforeEachTime");
 
     ourProject = response.body;
 });
 
 
 afterEach(async() => { 
-    console.time("deleteProjectAfterEachTime");
     await request(constants.HOST).delete(`/projects/${ourProject.id}`).send();
-    console.timeEnd("deleteProjectAfterEachTime");
 });
 
 describe("/projects/:id", () => {
@@ -58,9 +56,17 @@ describe("/projects/:id", () => {
     describe("GET", () => {
 
         it("returns the project we created with it's id", async() => {
-            console.time("getProjectTime");
+            const startTime = new Date();
             const response = await request(constants.HOST).get(`/projects/${ourProject.id}`);
-            console.timeEnd("getProjectTime");           
+            const endTime = new Date();
+            
+            results.push({
+                testName: "GET created project",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
+
             expect(response.statusCode).toEqual(200);
             expect(response.body.projects[0]).toEqual(ourProject);
         });
@@ -69,10 +75,16 @@ describe("/projects/:id", () => {
             const invalidId = -1; 
 
             const expectedError = "Could not find an instance with projects/-1";
-
-            console.time("getProjectInvalidTime");
+            const startTime = new Date();
             const response = await request(constants.HOST).get(`/projects/${invalidId}`).send();
-            console.timeEnd("getProjectInvalidTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "GET project Invalid ID",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(404);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
@@ -80,10 +92,18 @@ describe("/projects/:id", () => {
     });
 
     describe("HEAD", () => {
-        it("returns JSON as default", async() => {
-            console.time("headProjectTime");
+        it("returns project JSON as default", async() => {
+            const startTime = new Date();
             const response = await request(constants.HOST).head(`/projects/${ourProject.id}`).send();
-            console.timeEnd("headProjectTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "HEAD JSON",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
+
             expect(response.statusCode).toEqual(200);
             expect(response.headers["content-type"]).toEqual("application/json");
         });
@@ -93,12 +113,19 @@ describe("/projects/:id", () => {
 
         it("should update the title of a project given a valid title", async() => {
             const validTitle = "NEW TITLE";
+            const startTime = new Date();
 
-            console.time("updatePOSTProjectTitleTime");
             const response = await request(constants.HOST).post(`/projects/${ourProject.id}`).send({
                 title: validTitle
             });
-            console.timeEnd("updatePOSTProjectTitleTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST project update title",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             expect(response.body.id).toEqual(ourProject.id);
@@ -110,12 +137,19 @@ describe("/projects/:id", () => {
 
         it("should update the active status of a project given a valid active status", async() => {
             const validStatus = true;
+            const startTime = new Date();
 
-            console.time("updatePOSTProjectActiveStatusTime");
             const response = await request(constants.HOST).post(`/projects/${ourProject.id}`).send({
                 active: validStatus
             });
-            console.timeEnd("updatePOSTProjectActiveStatusTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST update project active status",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             expect(response.body.id).toEqual(ourProject.id);
@@ -127,12 +161,19 @@ describe("/projects/:id", () => {
 
         it("should update the completed status of a project given a valid completed status", async() => {
             const validStatus = true;
+            const startTime = new Date();
 
-            console.time("updatePOSTProjectCompletedStatusTime");
             const response = await request(constants.HOST).post(`/projects/${ourProject.id}`).send({
                 completed: validStatus
             });
-            console.timeEnd("updatePOSTProjectCompletedStatusTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST update project competion status",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             expect(response.body.id).toEqual(ourProject.id);
@@ -144,12 +185,19 @@ describe("/projects/:id", () => {
 
         it("should update the description of a project", async() => {
             const validDescription = "NEW DESCRIPTION";
+            const startTime = new Date();
 
-            console.time("updatePOSTProjectDescriptionTime");
             const response = await request(constants.HOST).post(`/projects/${ourProject.id}`).send({
                 description: validDescription
             });
-            console.timeEnd("updatePOSTProjectDescriptionTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST update project description",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             expect(response.body.id).toEqual(ourProject.id);
@@ -161,12 +209,19 @@ describe("/projects/:id", () => {
 
         it("should update a project's id with a valid id, but should not be the same if id already exists", async() => {
             const validId = 12345567;
+            const startTime = new Date();
 
-            console.time("updatePOSTProjectIdTime");
             const response = await request(constants.HOST).post(`/projects/${ourProject.id}`).send({
                 id: validId
             });
-            console.timeEnd("updatePOSTProjectIdTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST update project ID",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             !expect(response.body.id).toEqual(ourProject.id);
@@ -178,14 +233,21 @@ describe("/projects/:id", () => {
 
         it("should not update project with invalid id", async() => {
             const invalidId = true; 
+            const startTime = new Date();
 
             const expectedError = "Failed Validation: id should be ID";
 
-            console.time("updatePOSTProjectInvalidIdTime");
             const response = await request(constants.HOST).post(`/projects/${ourProject.id}`).send({
                 id: invalidId
             });
-            console.timeEnd("updatePOSTProjectInvalidIdTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST update project invalid ID",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(400);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
@@ -193,14 +255,21 @@ describe("/projects/:id", () => {
 
         it("should not update project with invalid active status", async() => {
             const invalidActiveStatus = 1; 
+            const startTime = new Date();
 
             const expectedError = "Failed Validation: active should be BOOLEAN";
 
-            console.time("updatePOSTProjectInvalidActiveStatusTime");
             const response = await request(constants.HOST).post(`/projects/${ourProject.id}`).send({
                 active: invalidActiveStatus
             });
-            console.timeEnd("updatePOSTProjectInvalidActiveStatusTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST update project invalid active status",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(400);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
@@ -208,14 +277,21 @@ describe("/projects/:id", () => {
 
         it("should not update project with invalid completed status", async() => {
             const invalidCompletedStatus = 1; 
+            const startTime = new Date();
 
             const expectedError = "Failed Validation: completed should be BOOLEAN";
 
-            console.time("updatePOSTProjectInvalidCompletedStatusTime");
             const response = await request(constants.HOST).post(`/projects/${ourProject.id}`).send({
                 completed: invalidCompletedStatus
             });
-            console.timeEnd("updatePOSTProjectInvalidCompletedStatusTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST update project invalid completion status",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(400);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
@@ -226,15 +302,22 @@ describe("/projects/:id", () => {
             const validActive = true;
             const validCompleted = true;
             const validDescription = "NEW DESCRIPTION";
+            const startTime = new Date();
 
-            console.time("updatePOSTMultipleProjectValidTime");
             const response = await request(constants.HOST).post(`/projects/${ourProject.id}`).send({
                 title: validTitle,
                 active: validActive,
                 completed: validCompleted,
                 description: validDescription
             });
-            console.timeEnd("updatePOSTMultipleProjectValidTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST update project multiple valid fields",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             expect(response.body.id).toEqual(ourProject.id);
@@ -254,12 +337,19 @@ describe("/projects/:id", () => {
 
         it("should update the title of a project given a valid title, all others to default", async() => {
             const validTitle = "NEW TITLE";
+            const startTime = new Date();
 
-            console.time("updatePUTProjectTitleTime");
             const response = await request(constants.HOST).put(`/projects/${ourProject.id}`).send({
                 title: validTitle
             });
-            console.timeEnd("updatePUTProjectTitleTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT update project title",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             expect(response.body.id).toEqual(ourProject.id);
@@ -271,12 +361,19 @@ describe("/projects/:id", () => {
 
         it("should update the active status of a project given a valid status and the rest to default", async() => {
             const validActive = true;
+            const startTime = new Date();
 
-            console.time("updatePUTProjectActiveStatusTime");
             const response = await request(constants.HOST).put(`/projects/${ourProject.id}`).send({
                 active: validActive
             });
-            console.timeEnd("updatePUTProjectActiveStatusTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT update project active status",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             expect(response.body.id).toEqual(ourProject.id);
@@ -288,12 +385,19 @@ describe("/projects/:id", () => {
 
         it("should update the completed status of a project given a valid status and the rest to default", async() => {
             const validCompleted = true;
+            const startTime = new Date();
 
-            console.time("updatePUTProjectCompletedStatusTime");
             const response = await request(constants.HOST).put(`/projects/${ourProject.id}`).send({
                 completed: validCompleted
             });
-            console.timeEnd("updatePUTProjectCompletedStatusTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT update project completed status",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             expect(response.body.id).toEqual(ourProject.id);
@@ -305,12 +409,19 @@ describe("/projects/:id", () => {
 
         it("should update the description of a project given a valid status and the rest to default", async() => {
             const validDescription = "NEW DESCRIPTION";
+            const startTime = new Date();
 
-            console.time("updatePUTProjectDescriptionTime");
             const response = await request(constants.HOST).put(`/projects/${ourProject.id}`).send({
                 description: validDescription
             });
-            console.timeEnd("updatePUTProjectDescriptionTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT update project description",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             expect(response.body.id).toEqual(ourProject.id);
@@ -322,12 +433,19 @@ describe("/projects/:id", () => {
 
         it("should update a project's id with a valid id, but should not be the same if id already exists,  with the rest defaulted", async() => {
             const validId = 12345567;
+            const startTime = new Date();
 
-            console.time("updatePUTProjectIdTime");
             const response = await request(constants.HOST).put(`/projects/${ourProject.id}`).send({
                 id: validId
             });
-            console.timeEnd("updatePUTProjectIdTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT update project ID",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             !expect(response.body.id).toEqual(ourProject.id);
@@ -341,12 +459,19 @@ describe("/projects/:id", () => {
             const invalidId = true; 
 
             const expectedError = "Failed Validation: id should be ID";
+            const startTime = new Date();
 
-            console.time("updatePUTProjectInvalidIdTime");
             const response = await request(constants.HOST).put(`/projects/${ourProject.id}`).send({
                 id: invalidId
             });
-            console.timeEnd("updatePUTProjectInvalidIdTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT no update project invalid ID",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(400);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
@@ -354,12 +479,19 @@ describe("/projects/:id", () => {
 
         it("should update project with empty title", async() => {
             const emptyTitle = ""; 
+            const startTime = new Date();
 
-            console.time("updatePUTProjectEmptyTitleTime");
             const response = await request(constants.HOST).put(`/projects/${ourProject.id}`).send({
                 title: emptyTitle
             });
-            console.timeEnd("updatePUTProjectEmptyTitleTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT update project empty title",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             expect(response.body.id).toEqual(ourProject.id);
@@ -373,12 +505,19 @@ describe("/projects/:id", () => {
             const invalidActiveStatus = 1; 
 
             const expectedError = "Failed Validation: active should be BOOLEAN";
+            const startTime = new Date();
 
-            console.time("updatePUTProjectInvalidActiveStatusTime");
             const response = await request(constants.HOST).put(`/projects/${ourProject.id}`).send({
                 active: invalidActiveStatus
             });
-            console.timeEnd("updatePUTProjectInvalidActiveStatusTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT not update project invalid active status",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(400);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
@@ -388,12 +527,19 @@ describe("/projects/:id", () => {
             const invalidCompletedStatus = 1; 
 
             const expectedError = "Failed Validation: completed should be BOOLEAN";
+            const startTime = new Date();
 
-            console.time("updatePUTProjectInvalidActiveCompletionTime");
             const response = await request(constants.HOST).put(`/projects/${ourProject.id}`).send({
                 completed: invalidCompletedStatus
             });
-            console.timeEnd("updatePUTProjectInvalidActiveCompletionTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT not update project invalid completed status",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(400);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
@@ -403,14 +549,21 @@ describe("/projects/:id", () => {
             const validTitle = "TITLE";
             const validActive = true;
             const validDescription = "NEW DESCRIPTION";
+            const startTime = new Date();
 
-            console.time("updatePUTProjectMultipleValidTime");
             const response = await request(constants.HOST).put(`/projects/${ourProject.id}`).send({
                 title: validTitle,
                 active: validActive,
                 description: validDescription
             });
-            console.timeEnd("updatePUTProjectMultipleValidTime");
+            const endTime = new Date();
+            
+            results.push({
+                testName: "PUT update project multiple fields",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             expect(response.body.id).toEqual(ourProject.id);
@@ -422,12 +575,19 @@ describe("/projects/:id", () => {
 
         it("should return an error when given an invalid id", async() => {
             const invalidId = -1; 
-
+            
             const expectedError = "Invalid GUID for -1 entity project";
+            const startTime = new Date();
 
-            console.time("updatePUTProjectInvalidIdErrorTime");
             const response = await request(constants.HOST).put(`/projects/${invalidId}`).send();
-            console.timeEnd("updatePUTProjectInvalidIdErrorTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT error when given invalid ID",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(404);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
@@ -437,16 +597,31 @@ describe("/projects/:id", () => {
     describe("DELETE", () => {
 
         it("deletes a project with a valid id", async() => {
-            console.time("deleteProjectTime");
+            const startTime = new Date();
             const deleteResponse = await request(constants.HOST).delete(`/projects/${ourProject.id}`);
-            console.timeEnd("deleteProjectTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "DELETE project",
+                duration: endTime - startTime,
+                statusCode: deleteResponse.statusCode,
+                objectCount: 1
+            });
+
             expect(deleteResponse.statusCode).toEqual(200);
             
             const expectedError = `Could not find an instance with projects/${ourProject.id}`;
+            const startTime2 = new Date();
 
-            console.time("verifyDeleteProjectTime");
             const getResponse = await request(constants.HOST).get(`/projects/${ourProject.id}`).send();
-            console.timeEnd("verifyDeleteProjectTime");
+            const endTime2 = new Date();
+
+            results.push({
+                testName: "DELETE project confirmation",
+                duration: endTime2 - startTime2,
+                statusCode: deleteResponse.statusCode,
+                objectCount: 1
+            });
 
             expect(getResponse.statusCode).toEqual(404);
             expect(getResponse.body.errorMessages[0]).toEqual(expectedError);
@@ -456,12 +631,27 @@ describe("/projects/:id", () => {
             const invalidId = -1; 
 
             const expectedError = "Could not find any instances with projects/-1";
+            const startTime = new Date();
 
-            console.time("deleteInvalidProjectTime");
             const response = await request(constants.HOST).delete(`/projects/${invalidId}`).send();
-            console.timeEnd("deleteInvalidProjectTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "DELETE project invalid",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
+
             expect(response.statusCode).toEqual(404);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
         });
     });
+});
+
+afterAll(() => {
+    let csvContent = "Test Name,Duration (ms),Status Code,Object Count\n" +
+        results.map(e => `${e.testName},${e.duration},${e.statusCode},${e.objectCount}`).join("\n");
+
+    fs.writeFileSync('performance_results_projectsid.test.csv', csvContent);
 });
