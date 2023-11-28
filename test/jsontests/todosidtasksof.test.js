@@ -1,6 +1,9 @@
 const net = require("net");
 const request = require("supertest");
 const constants = require("./constants.json");
+const fs = require('fs');
+
+const results = [];
 
 let ourTodo;
 let ourProject;
@@ -34,13 +37,11 @@ beforeEach(async() => {
     const validTodoDoneStatus = false;
     const validTodoDescription = "Description of todo"
 
-    console.time("postTodoBeforeEach");
     const todoResponse = await request(constants.HOST).post("/todos").send({
         title: validTodoTitle,
         doneStatus: validTodoDoneStatus,
         description: validTodoDescription
     });
-    console.timeEnd("postTodoBeforeEach");
     ourTodo = todoResponse.body;
 
     ourTodo = todoResponse.body;
@@ -50,43 +51,52 @@ beforeEach(async() => {
     const validProjectActive= false;
     const validProjectDescription = "Description of project"
 
-    console.time("postProjectBeforeEach");
     const projectResponse = await request(constants.HOST).post("/projects").send({
         title: validProjectTitle,
         completed: validProjectCompleted,
         active: validProjectActive,
         description: validProjectDescription
     });
-    console.timeEnd("postProjectBeforeEach");
 
     ourProject = projectResponse.body;
 });
 
 afterEach(async() => { 
-    console.time("deleteProjectAfterEach");
     await request(constants.HOST).delete(`/projects/${ourProject.id}`).send();
-    console.timeEnd("deleteProjectAfterEach");
-
-    console.time("deleteTodoAfterEach");
     await request(constants.HOST).delete(`/todos/${ourTodo.id}`).send();
-    console.timeEnd("deleteTodoAfterEach");
 });
 
 describe("/todos/:id/tasksof", () => {
     describe("GET", () => {
 
         it("returns tasks for related project and todo", async() => {
+            const startTime = new Date();
              
-            console.time("postTasksof");
             const postResponse = await request(constants.HOST).post(`/todos/${ourTodo.id}/tasksof`).send({
                 id: ourProject.id
             });
-            console.timeEnd("postTasksof");
-            expect(postResponse.statusCode).toEqual(201);
+            const endTime = new Date();
 
-            console.time("getTasksofRelated");
+            results.push({
+                testName: "POST valid TODO",
+                duration: endTime - startTime,
+                statusCode: postResponse.statusCode,
+                objectCount: 1
+            });
+
+            expect(postResponse.statusCode).toEqual(201);
+            const startTime2 = new Date();
+
             const response = await request(constants.HOST).get(`/todos/${ourTodo.id}/tasksof`).send();
-            console.timeEnd("getTasksofRelated");            
+            const endTime2 = new Date();
+
+            results.push({
+                testName: "GET created todos",
+                duration: endTime2 - startTime2,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
+
             expect(response.statusCode).toEqual(200);
             expect(response.body.projects[0].id).toEqual(ourProject.id);
             expect(response.body.projects[0].title).toEqual(ourProject.title);
@@ -96,12 +106,27 @@ describe("/todos/:id/tasksof", () => {
         });
 
         it("returns no tasks for unrelated project and todo", async() => {
-            console.time("getTasksofUnrelated");
+            const startTime = new Date();
             const response = await request(constants.HOST).get(`/todos/${ourTodo.id}/tasksof`).send();
-            console.timeEnd("getTasksofUnrelated");
+            const endTime = new Date();
+
+            results.push({
+                testName: "GET no unrelated tasks",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
+
             expect(response.statusCode).toEqual(200);
             expect(response.body.projects.length).toEqual(0);
         });
 
     });
+});
+
+afterAll(() => {
+    let csvContent = "Test Name,Duration (ms),Status Code,Object Count\n" +
+        results.map(e => `${e.testName},${e.duration},${e.statusCode},${e.objectCount}`).join("\n");
+
+    fs.writeFileSync('performance_results_todosidtasksof.test.csv', csvContent);
 });

@@ -1,6 +1,9 @@
 const net = require("net");
 const request = require("supertest");
 const constants = require("./constants.json");
+const fs = require('fs');
+
+const results = [];
 
 let ourTodo;
 let ourProject;
@@ -62,8 +65,6 @@ beforeEach(async() => {
 });
 
 afterEach(async() => { 
-    
-    
     await request(constants.HOST).delete(`/todos/${ourTodo.id}/tasksof/${ourProject}`);
     await request(constants.HOST).delete(`/projects/${ourProject.id}`).send();
     await request(constants.HOST).delete(`/todos/${ourTodo.id}`).send();
@@ -73,10 +74,19 @@ afterEach(async() => {
 describe("/todos/:id/tasksof/:id", () => {
     describe("DELETE", () => {
         it("should delete the taskof relationship between a valid todo id and project id", async() => {
+            const startTime = new Date();
             const deleteResponse = await request(constants.HOST).delete(`/todos/${ourTodo.id}/tasksof/${ourProject.id}`);
+            const endTime = new Date();
+
+            results.push({
+                testName: "DELETE taskof with valid IDs",
+                duration: endTime - startTime,
+                statusCode: deleteResponse.statusCode,
+                objectCount: 1
+            });
+
             expect(deleteResponse.statusCode).toEqual(200);
             
-            // check that relationship is actually gone
             const response = await request(constants.HOST).get(`/todos/${ourTodo.id}/tasksof`).send();
             expect(response.statusCode).toEqual(200);
             expect(response.body.projects.length).toEqual(0);
@@ -86,8 +96,17 @@ describe("/todos/:id/tasksof/:id", () => {
             const invalidId = -1; 
 
             const expectedError = `Could not find any instances with todos/${ourTodo.id}/tasksof/${invalidId}`;
+            const startTime = new Date();
 
             const response = await request(constants.HOST).delete(`/todos/${ourTodo.id}/tasksof/${invalidId}`).send();
+            const endTime = new Date();
+
+            results.push({
+                testName: "DELETE no tasks invalid project ID",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(404);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
@@ -95,11 +114,27 @@ describe("/todos/:id/tasksof/:id", () => {
 
         it("should delete the taskof relationship between an invalid todo id and a valid project id", async() => {
             const invalidId = -1; 
+            const startTime = new Date();
 
             const response = await request(constants.HOST).delete(`/todos/${invalidId}/tasksof/${ourProject.id}`).send();
+            const endTime = new Date();
+
+            results.push({
+                testName: "DELETE no tasks invalid todo ID",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(400);
             expect(response.body).toEqual({});
         });
     });    
+});
+
+afterAll(() => {
+    let csvContent = "Test Name,Duration (ms),Status Code,Object Count\n" +
+        results.map(e => `${e.testName},${e.duration},${e.statusCode},${e.objectCount}`).join("\n");
+
+    fs.writeFileSync('performance_results_todosidtasksofid.test.csv', csvContent);
 });

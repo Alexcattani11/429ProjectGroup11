@@ -1,6 +1,9 @@
 const net = require("net");
 const request = require("supertest");
 const constants = require("./constants.json");
+const fs = require('fs');
+
+const results = [];
 
 let ourTodo;
 
@@ -66,39 +69,51 @@ beforeEach(async() => {
     const validDoneStatus = false;
     const validDescription = "Description"
 
-    console.time("createTodoBeforeEachTime");
     const response = await request(constants.HOST).post("/todos").send({
         title: validTitle,
         doneStatus: validDoneStatus,
         description: validDescription
     });
-    console.timeEnd("createTodoBeforeEachTime");
 
     ourTodo = response.body;
 });
 
 afterEach(async() => { 
-    console.time("deleteTodoAfterEachTime");
     await request(constants.HOST).delete(`/todos/${ourTodo.id}`).send();
-    console.timeEnd("deleteTodoAfterEachTime");
 });
 
 describe("/todos", () => {
     describe("GET", () => {
 
         it("returns at least the default entry", async() => {
-            console.time("getTodosDefaultEntryTime");
+            const startTime = new Date();
             const response = await request(constants.HOST).get("/todos").send();
-            console.timeEnd("getTodosDefaultEntryTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "GET all todos",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
+
             expect(response.statusCode).toEqual(200);
             expect(response.body.todos.includes(DEFAULTTODO.todos[0]));
             expect(response.body.todos.includes(DEFAULTTODO.todos[1]));
         });
 
         it("returns an entry that we put into the data", async() => {
-            console.time("getTodosEntryTime");
+            const startTime = new Date();
             const response = await request(constants.HOST).get("/todos").send();
-            console.timeEnd("getTodosEntryTime");            
+            const endTime = new Date();
+
+            results.push({
+                testName: "GET created todo",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
+
             expect(response.statusCode).toEqual(200);
             expect(response.body.todos.includes(ourTodo));
         });
@@ -108,12 +123,19 @@ describe("/todos", () => {
 
         it("should create todo with just title", async() => {
             const validTitle = "Title";
+            const startTime = new Date();
 
-            console.time("createPOSTTodoJustTitleTime");
             const response = await request(constants.HOST).post("/todos").send({
                 title: validTitle
             });
-            console.timeEnd("createPOSTTodoJustTitleTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST new todo",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(201);
             expect(response.body.id);
@@ -121,23 +143,28 @@ describe("/todos", () => {
             expect(response.body.doneStatus).toEqual("false");
             expect(!response.body.decsription);
 
-            console.time("deletePOSTTodoAfterJustTitleTime");
             await request(constants.HOST).delete(`/todos/${response.body.id}`).send();
-            console.timeEnd("deletePOSTTodoAfterJustTitleTime");
         });
 
         it("should create todo with all params", async() => {
             const validTitle = "Title";
             const validDoneStatus = false;
-            const validDescription = "Description"
+            const validDescription = "Description";
+            const startTime = new Date();
 
-            console.time("createPOSTTodoAllParamsTime");
             const response = await request(constants.HOST).post("/todos").send({
                 title: validTitle,
                 doneStatus: validDoneStatus,
                 description: validDescription
             });
-            console.timeEnd("createPOSTTodoAllParamsTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST todo with all params",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(201);
             expect(response.body.id);
@@ -145,9 +172,7 @@ describe("/todos", () => {
             expect(response.body.doneStatus).toEqual(validDoneStatus.toString());
             expect(response.body.description).toEqual(validDescription);
 
-            console.time("deletePOSTTodoAfterAllParamsTime");
             await request(constants.HOST).delete(`/todos/${response.body.id}`).send();
-            console.timeEnd("deletePOSTTodoAfterAllParamsTime");
         });
 
         it("should not create todo with an ID", async() => {
@@ -157,15 +182,22 @@ describe("/todos", () => {
             const validDescription = "Description"
 
             const expectedError = "Invalid Creation: Failed Validation: Not allowed to create with id";
+            const startTime = new Date();
 
-            console.time("createPOSTTodoWithIdTime");
             const response = await request(constants.HOST).post("/todos").send({
                 id,
                 title: validTitle,
                 doneStatus: validDoneStatus,
                 description: validDescription
             });
-            console.timeEnd("createPOSTTodoWithIdTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST invalid ID todo",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(400);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
@@ -177,14 +209,21 @@ describe("/todos", () => {
             const validDescription = "Description";
 
             const expectedError = "Failed Validation: doneStatus should be BOOLEAN";
+            const startTime = new Date();
 
-            console.time("createPOSTTodoInvalidDoneStatusTime");
             const response = await request(constants.HOST).post("/todos").send({
                 title: validTitle,
                 doneStatus: invalidDoneStatus,
                 description: validDescription
             });
-            console.timeEnd("createPOSTTodoInvalidDoneStatusTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST invalid done status TODO",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(400);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
@@ -192,12 +231,19 @@ describe("/todos", () => {
 
         it("should update the title of a todo", async() => {
             const validTitle = "New test";
+            const startTime = new Date();
 
-            console.time("createPOSTTodoTitleTime");
             const response = await request(constants.HOST).post("/todos").send({
                 title: validTitle
             });
-            console.timeEnd("createPOSTTodoTitleTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST update TODO title",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(201);
             expect(response.body.id).not.toEqual(ourTodo.id);
@@ -205,19 +251,24 @@ describe("/todos", () => {
             expect(response.body.doneStatus).toEqual(ourTodo.doneStatus);
             expect(response.body.description).not.toEqual(ourTodo.description);
 
-            console.time("deletePOSTTodoAfterTitleTime");
             await request(constants.HOST).delete(`/todos/${response.body.id}`).send();
-            console.timeEnd("deletePOSTTodoAfterTitleTime");
         });
 
         it("should update the donestatus of a todo", async() => {
             const validStatus = true;
+            const startTime = new Date();
 
-            console.time("updatePOSTTodoDoneStatusTime");
             const response = await request(constants.HOST).post(`/todos/${ourTodo.id}`).send({
                 doneStatus: validStatus
             });
-            console.timeEnd("updatePOSTTodoDoneStatusTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST update TODO done status",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             expect(response.body.id).toEqual(ourTodo.id);
@@ -228,12 +279,19 @@ describe("/todos", () => {
 
         it("should update the description of a todo", async() => {
             const validDescription = "New description";
+            const startTime = new Date();
 
-            console.time("updatePOSTTodoDescriptionTime");
             const response = await request(constants.HOST).post(`/todos/${ourTodo.id}`).send({
                 description: validDescription
             });
-            console.timeEnd("updatePOSTTodoDescriptionTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST update TODO description",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             expect(response.body.id).toEqual(ourTodo.id);
@@ -244,12 +302,19 @@ describe("/todos", () => {
 
         it("should update a todo's id with a valid id", async() => {
             const validId = 12345567;
+            const startTime = new Date();
 
-            console.time("updatePOSTTodoIdWithNewIdTime");
             const response = await request(constants.HOST).post(`/todos/${ourTodo.id}`).send({
                 id: validId
             });
-            console.timeEnd("updatePOSTTodoIdWithNewIdTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST update TODO ID",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             !expect(response.body.id).toEqual(ourTodo.id);
@@ -262,12 +327,19 @@ describe("/todos", () => {
             const invalidId = true; 
 
             const expectedError = "Failed Validation: id should be ID";
+            const startTime = new Date();
 
-            console.time("updatePOSTTodoIdWithInvalidIdTime");
             const response = await request(constants.HOST).post(`/todos/${ourTodo.id}`).send({
                 id: invalidId
             });
-            console.timeEnd("updatePOSTTodoIdWithInvalidIdTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST not update TODO ID",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(400);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
@@ -277,12 +349,19 @@ describe("/todos", () => {
             const invalidTitle = ""; 
 
             const expectedError = "Failed Validation: title : can not be empty";
+            const startTime = new Date();
 
-            console.time("updatePOSTTodoWithInvalidTitleTime");
             const response = await request(constants.HOST).post(`/todos/${ourTodo.id}`).send({
                 title: invalidTitle
             });
-            console.timeEnd("updatePOSTTodoWithInvalidTitleTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST not update TODO title",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(400);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
@@ -292,12 +371,19 @@ describe("/todos", () => {
             const invalidDoneStatus = 1; 
 
             const expectedError = "Failed Validation: doneStatus should be BOOLEAN";
+            const startTime = new Date();
 
-            console.time("updatePOSTTodoWithInvalidDoneStatusTime");
             const response = await request(constants.HOST).post(`/todos/${ourTodo.id}`).send({
                 doneStatus: invalidDoneStatus
             });
-            console.timeEnd("updatePOSTTodoWithInvalidDoneStatusTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST not update TODO done status",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(400);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
@@ -307,14 +393,21 @@ describe("/todos", () => {
             const validTitle = "Title";
             const validStatus = false;
             const validDescription = "New description";
+            const startTime = new Date();
 
-            console.time("updatePOSTTodoWithMultipleValidTime");
             const response = await request(constants.HOST).post(`/todos/${ourTodo.id}`).send({
                 title: validTitle,
                 doneStatus: validStatus,
                 description: validDescription
             });
-            console.timeEnd("updatePOSTTodoWithMultipleValidTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "POST update multiple TODO fields",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             expect(response.body.id).toEqual(ourTodo.id);
@@ -331,12 +424,19 @@ describe("/todos", () => {
 
         it("should update the title of a todo given a valid title, all others to default", async() => {
             const validTitle = "New title";
+            const startTime = new Date();
 
-            console.time("updatePUTNewTitleTime");
             const response = await request(constants.HOST).put(`/todos/${ourTodo.id}`).send({
                 title: validTitle
             });
-            console.timeEnd("updatePUTNewTitleTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT update TODO title",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             expect(response.body.id).toEqual(ourTodo.id);
@@ -348,13 +448,20 @@ describe("/todos", () => {
         it("should update the doneStatus of a todo given a valid status", async() => {
             const validStatus = true;
             const validTitle = "New title";
+            const startTime = new Date();
 
-            console.time("updatePUTNewDoneStatusTime");
             const response = await request(constants.HOST).put(`/todos/${ourTodo.id}`).send({
                 doneStatus: validStatus,
                 title: validTitle
             });
-            console.timeEnd("updatePUTNewDoneStatusTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT update TODO done status",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             expect(response.body.id).toEqual(ourTodo.id);
@@ -366,13 +473,20 @@ describe("/todos", () => {
         it("should update the description of a todo", async() => {
             const validDescription = "New description";
             const validTitle = "New title";
+            const startTime = new Date();
 
-            console.time("updatePUTNewDescriptionTime");
             const response = await request(constants.HOST).put(`/todos/${ourTodo.id}`).send({
                 description: validDescription,
                 title: validTitle
             });
-            console.timeEnd("updatePUTNewDescriptionTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT update TODO description",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             expect(response.body.id).toEqual(ourTodo.id);
@@ -384,13 +498,20 @@ describe("/todos", () => {
         it("should update a todo's id with a valid id", async() => {
             const validId = 999;
             const validTitle = "New title";
+            const startTime = new Date();
 
-            console.time("updatePUTNewIdTime");
             const response = await request(constants.HOST).put(`/todos/${ourTodo.id}`).send({
                 id: validId,
                 title: validTitle
             });
-            console.timeEnd("updatePUTNewIdTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT update TODO ID",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             !expect(response.body.id).toEqual(ourTodo.id);
@@ -403,12 +524,19 @@ describe("/todos", () => {
             const invalidId = true; 
 
             const expectedError = "Failed Validation: id should be ID";
+            const startTime = new Date();
 
-            console.time("updatePUTInvalidIdTime");
             const response = await request(constants.HOST).put(`/todos/${ourTodo.id}`).send({
                 id: invalidId
             });
-            console.time("updatePUTInvalidIdTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT not update TODO ID",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(400);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
@@ -418,12 +546,19 @@ describe("/todos", () => {
             const invalidTitle = ""; 
 
             const expectedError = "Failed Validation: title : can not be empty";
+            const startTime = new Date();
 
-            console.time("updatePUTInvalidTitleTime");
             const response = await request(constants.HOST).put(`/todos/${ourTodo.id}`).send({
                 title: invalidTitle
             });
-            console.time("updatePUTInvalidTitleTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT not update TODO title",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(400);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
@@ -435,14 +570,21 @@ describe("/todos", () => {
             const validDescription = "New description";
 
             const expectedError = "title : field is mandatory";
+            const startTime = new Date();
 
-            console.time("updatePUTEmptyTitleTime");
             const response = await request(constants.HOST).put(`/todos/${ourTodo.id}`).send({
                 id: validId,
                 doneStatus: validStatus,
                 description: validDescription
             });
-            console.timeEnd("updatePUTEmptyTitleTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT not update TODO without title",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(400);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
@@ -452,12 +594,19 @@ describe("/todos", () => {
             const invalidDoneStatus = 1; 
 
             const expectedError = "Failed Validation: doneStatus should be BOOLEAN";
+            const startTime = new Date();
 
-            console.time("updatePUTInvalidDoneStatusTime");
             const response = await request(constants.HOST).put(`/todos/${ourTodo.id}`).send({
                 doneStatus: invalidDoneStatus
             });
-            console.timeEnd("updatePUTInvalidDoneStatusTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT not update TODO done status",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(400);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
@@ -467,14 +616,21 @@ describe("/todos", () => {
             const validTitle = "Title";
             const validStatus = true;
             const validDescription = "New description";
+            const startTime = new Date();
 
-            console.time("updatePUTMultipleValidTime");
             const response = await request(constants.HOST).put(`/todos/${ourTodo.id}`).send({
                 title: validTitle,
                 doneStatus: validStatus,
                 description: validDescription
             });
-            console.timeEnd("updatePUTMultipleValidTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "PUT update multiple TODO fields",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
 
             expect(response.statusCode).toEqual(200);
             expect(response.body.id).toEqual(ourTodo.id);
@@ -487,16 +643,30 @@ describe("/todos", () => {
     describe("DELETE", () => {
 
         it("deletes a todo with an id", async() => {
-            console.time("deleteTodoWithValidIdTime");
+            const startTime = new Date();
             const deleteResponse = await request(constants.HOST).delete(`/todos/${ourTodo.id}`);
-            console.timeEnd("deleteTodoWithValidIdTime");
+            const endTime = new Date();
             expect(deleteResponse.statusCode).toEqual(200);
+
+            results.push({
+                testName: "DELETE TODO",
+                duration: endTime - startTime,
+                statusCode: deleteResponse.statusCode,
+                objectCount: 1
+            });
     
             const expectedError = `Could not find an instance with todos/${ourTodo.id}`;
+            const startTime2 = new Date();
     
-            console.time("getDeletedTodoTime");
             const getResponse = await request(constants.HOST).get(`/todos/${ourTodo.id}`).send();
-            console.timeEnd("getDeletedTodoTime");
+            const endTime2 = new Date();
+
+            results.push({
+                testName: "DELETE confirmation TODO",
+                duration: endTime2 - startTime2,
+                statusCode: getResponse.statusCode,
+                objectCount: 1
+            });
     
             expect(getResponse.statusCode).toEqual(404);
             expect(getResponse.body.errorMessages[0]).toEqual(expectedError);
@@ -506,13 +676,27 @@ describe("/todos", () => {
             const invalidId = -1;
     
             const expectedError = "Could not find any instances with todos/-1";
+            const startTime = new Date();
     
-            console.time("deleteTodoWithInvalidIdTime");
             const response = await request(constants.HOST).delete(`/todos/${invalidId}`).send();
-            console.timeEnd("deleteTodoWithInvalidIdTime");
+            const endTime = new Date();
+
+            results.push({
+                testName: "DELETE TODO invalid",
+                duration: endTime - startTime,
+                statusCode: response.statusCode,
+                objectCount: 1
+            });
     
             expect(response.statusCode).toEqual(404);
             expect(response.body.errorMessages[0]).toEqual(expectedError);
         });
     });    
+});
+
+afterAll(() => {
+    let csvContent = "Test Name,Duration (ms),Status Code,Object Count\n" +
+        results.map(e => `${e.testName},${e.duration},${e.statusCode},${e.objectCount}`).join("\n");
+
+    fs.writeFileSync('performance_results_todos.test.csv', csvContent);
 });
