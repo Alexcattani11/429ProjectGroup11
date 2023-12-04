@@ -1,27 +1,27 @@
 Test Name,Duration (ms),Status Code,Object Count
-GET created project,2,200,1
+GET created project,1,200,1
 GET project Invalid ID,1,404,1
 HEAD JSON,1,200,1
-POST project update title,1,200,1
-POST update project active status,0,200,1
+POST project update title,0,200,1
+POST update project active status,1,200,1
 POST update project competion status,1,200,1
-POST update project description,0,200,1
+POST update project description,5,200,1
 POST update project ID,1,200,1
-POST update project invalid ID,1,400,1
+POST update project invalid ID,0,400,1
 POST update project invalid active status,1,400,1
-POST update project invalid completion status,1,400,1
+POST update project invalid completion status,0,400,1
 POST update project multiple valid fields,1,200,1
-PUT update project title,1,200,1
+PUT update project title,0,200,1
 PUT update project active status,1,200,1
 PUT update project completed status,1,200,1
-PUT update project description,1,200,1
-PUT update project ID,1,200,1
+PUT update project description,0,200,1
+PUT update project ID,0,200,1
 PUT no update project invalid ID,0,400,1
-PUT update project empty title,1,200,1
+PUT update project empty title,0,200,1
 PUT not update project invalid active status,1,400,1
 PUT not update project invalid completed status,0,400,1
-PUT update project multiple fields,0,200,1
+PUT update project multiple fields,1,200,1
 PUT error when given invalid ID,1,404,1
 DELETE project,1,200,1
 DELETE project confirmation,0,200,1
-DELETE project invalid,0,404,1
+DELETE project invalid,1,404,1
