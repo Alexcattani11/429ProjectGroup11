@@ -8,7 +8,7 @@ const results = [];
 
 // Set up tests 
 beforeAll(done => {
-    var server = net.createServer();
+    let server = net.createServer();
     server.once('error', function(err) {
         if (err.code === 'EADDRINUSE') {
             server.close();

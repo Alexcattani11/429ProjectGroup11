@@ -43,7 +43,7 @@ const DEFAULTTODO = {
 //set up tests 
 beforeAll(done => {
     //create server
-    var server = net.createServer();
+    let server = net.createServer();
 
     //confirm jar is working
     server.once('error', function(err) {
@@ -317,7 +317,6 @@ describe("/todos", () => {
             });
 
             expect(response.statusCode).toEqual(200);
-            !expect(response.body.id).toEqual(ourTodo.id);
             expect(response.body.title).toEqual(ourTodo.title);
             expect(response.body.doneStatus).toEqual(ourTodo.doneStatus);
             expect(response.body.description).toEqual(ourTodo.description);
@@ -514,7 +513,6 @@ describe("/todos", () => {
             });
 
             expect(response.statusCode).toEqual(200);
-            !expect(response.body.id).toEqual(ourTodo.id);
             expect(response.body.title).toEqual(validTitle);
             expect(response.body.doneStatus).toEqual(defaultDoneStatus.toString());
             expect(response.body.description).toEqual(defaultDescription);

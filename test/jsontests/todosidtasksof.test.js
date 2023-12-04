@@ -11,7 +11,7 @@ let ourProject;
 //set up tests 
 beforeAll(done => {
     //create server
-    var server = net.createServer();
+    let server = net.createServer();
 
     //confirm jar is working
     server.once('error', function(err) {

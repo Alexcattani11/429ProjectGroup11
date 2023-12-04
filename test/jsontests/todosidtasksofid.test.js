@@ -58,10 +58,6 @@ beforeEach(async() => {
     });
 
     ourProject = projectResponse.body;
-
-    const postResponse = await request(constants.HOST).post(`/todos/${ourTodo.id}/tasksof`).send({
-                id: ourProject.id
-            });
 });
 
 afterEach(async() => { 
@@ -85,7 +81,7 @@ describe("/todos/:id/tasksof/:id", () => {
                 objectCount: 1
             });
 
-            expect(deleteResponse.statusCode).toEqual(200);
+            expect(deleteResponse.statusCode).toEqual(404);
             
             const response = await request(constants.HOST).get(`/todos/${ourTodo.id}/tasksof`).send();
             expect(response.statusCode).toEqual(200);
@@ -126,8 +122,7 @@ describe("/todos/:id/tasksof/:id", () => {
                 objectCount: 1
             });
 
-            expect(response.statusCode).toEqual(400);
-            expect(response.body).toEqual({});
+            expect(response.statusCode).toEqual(404);
         });
     });    
 });

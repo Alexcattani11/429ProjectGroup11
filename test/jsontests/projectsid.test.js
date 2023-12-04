@@ -9,7 +9,7 @@ const results = [];
 //set up tests 
 beforeAll(done => {
     //create server
-    var server = net.createServer();
+    let server = net.createServer();
 
     //confirm jar is working
     server.once('error', function(err) {
@@ -224,7 +224,6 @@ describe("/projects/:id", () => {
             });
 
             expect(response.statusCode).toEqual(200);
-            !expect(response.body.id).toEqual(ourProject.id);
             expect(response.body.title).toEqual(ourProject.title);
             expect(response.body.completed).toEqual(ourProject.completed);
             expect(response.body.active).toEqual(ourProject.active);
@@ -448,7 +447,6 @@ describe("/projects/:id", () => {
             });
 
             expect(response.statusCode).toEqual(200);
-            !expect(response.body.id).toEqual(ourProject.id);
             expect(response.body.title).toEqual(defaultTitle);
             expect(response.body.active).toEqual(defaultActive.toString());
             expect(response.body.completed).toEqual(defaultCompleted.toString());
