@@ -10,7 +10,7 @@ Given('the todo with ID "{int}" exists and todo has title "{string}"', async fun
 });
 
 When('the user changes the todo with ID "{int}" with new title "{string}"', async function (id, newTitle) {
-    var lastApiResponse = await axios.put(`${apiBaseUrl}/todos/${id}`, { title: newTitle });
+    lastApiResponse = await axios.put(`${apiBaseUrl}/todos/${id}`, { title: newTitle });
 });
 
 Then('the todo with ID "{int}" should have its "{string}" value as the new title', async function (id, newTitle) {
