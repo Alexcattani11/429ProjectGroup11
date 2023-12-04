@@ -1,7 +1,7 @@
 node_modules
-performance_results_project.test.csv
-performance_results_docs.test.csv
-performance_results_projectsid.test.csv
-performance_results_todos.test.csv
-performance_results_projectsidtasksid.test.csv
-performance_results_todosidtasksofid.test.csv
+.performance_results_project.test.csv
+.performance_results_docs.test.csv
+.performance_results_projectsid.test.csv
+.performance_results_todos.test.csv
+.performance_results_projectsidtasksid.test.csv
+.performance_results_todosidtasksofid.test.csv

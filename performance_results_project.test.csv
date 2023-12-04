@@ -1,11 +1,11 @@
 Test Name,Duration (ms),Status Code,Object Count
 GET Default Entry,1,200,1
-GET Entry Added,0,200,1
+GET Entry Added,1,200,1
 HEAD Default JSON,1,200,0
 POST Project with Title Only,0,201,1
 POST Project with Mandatory and non Mandatory Params,1,201,1
 POST Project with input ID,1,400,1
-POST Project with empty title,1,201,1
+POST Project with empty title,0,201,1
 POST Project with invalid active status,1,400,1
 POST Project with invalid completion status,1,400,1
 POST Project with non-string description,1,201,1
