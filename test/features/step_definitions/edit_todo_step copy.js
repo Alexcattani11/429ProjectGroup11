@@ -10,7 +10,7 @@ Given('the todo with ID "{int}" exists and todo has title "{string}"', async fun
 });
 
 When('the user changes the todo with ID "{int}" with new title "{string}"', async function (id, newTitle) {
-    lastApiResponse = await axios.put(`${apiBaseUrl}/todos/${id}`, { title: newTitle });
+    var lastApiResponse = await axios.put(`${apiBaseUrl}/todos/${id}`, { title: newTitle });
 });
 
 Then('the todo with ID "{int}" should have its "{string}" value as the new title', async function (id, newTitle) {
@@ -52,11 +52,6 @@ When('the user changes the todo with ID {string} with new title', async function
 Then('the todo with ID {string} should have its {string} value as the new title', async function (id, newTitle) {
     const response = await axios.get(`${apiBaseUrl}/todos/${id}`);
     assert.equal(response.data.title, newTitle);
-});
-
-Given('existing todos can be edited', function () {
-    // This step is likely for setting context and might not require action. 
-    // If needed, implement a check to ensure todos can be edited.
 });
 
 Given('the todo with ID {string} exists', async function (id) {
