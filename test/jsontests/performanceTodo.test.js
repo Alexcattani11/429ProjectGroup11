@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-// Assuming the API is running at http://localhost:4567
+
 
 describe('Performance Testing for TODOs', () => {
   let createdTodoIds = [];
