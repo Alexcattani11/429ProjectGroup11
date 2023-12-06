@@ -39,5 +39,16 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ]
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alexcattani11/429ProjectGroup11.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Alexcattani11/429ProjectGroup11/issues"
+  },
+  "homepage": "https://github.com/Alexcattani11/429ProjectGroup11#readme"
 }

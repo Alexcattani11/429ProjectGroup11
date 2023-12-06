@@ -1,4 +1,4 @@
 Test Name,Duration (ms),Status Code,Object Count
-DELETE taskof with valid IDs,2,404,1
-DELETE no tasks invalid project ID,0,404,1
-DELETE no tasks invalid todo ID,0,404,1
+DELETE taskof with valid IDs,271,404,1
+DELETE no tasks invalid project ID,352,404,1
+DELETE no tasks invalid todo ID,312,404,1

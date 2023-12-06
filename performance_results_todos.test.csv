@@ -1,27 +1,27 @@
 Test Name,Duration (ms),Status Code,Object Count
-GET all todos,1,200,1
-GET created todo,1,200,1
-POST new todo,1,201,1
-POST todo with all params,1,201,1
-POST invalid ID todo,1,400,1
-POST invalid done status TODO,1,400,1
-POST update TODO title,0,201,1
-POST update TODO done status,1,200,1
-POST update TODO description,1,200,1
-POST update TODO ID,0,200,1
-POST not update TODO ID,1,400,1
-POST not update TODO title,1,400,1
-POST not update TODO done status,1,400,1
-POST update multiple TODO fields,1,200,1
-PUT update TODO title,1,200,1
-PUT update TODO done status,1,200,1
-PUT update TODO description,1,200,1
-PUT update TODO ID,1,200,1
-PUT not update TODO ID,1,400,1
-PUT not update TODO title,1,400,1
-PUT not update TODO without title,1,400,1
-PUT not update TODO done status,2,400,1
-PUT update multiple TODO fields,1,200,1
-DELETE TODO,1,200,1
-DELETE confirmation TODO,0,404,1
-DELETE TODO invalid,0,404,1
+GET all todos,2209,200,1
+GET created todo,1759,200,1
+POST new todo,2,201,1
+POST todo with all params,2,201,1
+POST invalid ID todo,2,400,1
+POST invalid done status TODO,2,400,1
+POST update TODO title,2,201,1
+POST update TODO done status,42,200,1
+POST update TODO description,63,200,1
+POST update TODO ID,18,200,1
+POST not update TODO ID,4,400,1
+POST not update TODO title,128,400,1
+POST not update TODO done status,51,400,1
+POST update multiple TODO fields,6,200,1
+PUT update TODO title,88,200,1
+PUT update TODO done status,37,200,1
+PUT update TODO description,41,200,1
+PUT update TODO ID,96,200,1
+PUT not update TODO ID,63,400,1
+PUT not update TODO title,45,400,1
+PUT not update TODO without title,88,400,1
+PUT not update TODO done status,90,400,1
+PUT update multiple TODO fields,20,200,1
+DELETE TODO,93,200,1
+DELETE confirmation TODO,262,404,1
+DELETE TODO invalid,272,404,1
