@@ -1,0 +1,6 @@
+projectKey=RestApi429
+serverUrl=http://localhost:9000
+serverVersion=10.3.0.82913
+dashboardUrl=http://localhost:9000/dashboard?id=RestApi429
+ceTaskId=AYw1nZCVvT4uSMv_TNps
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AYw1nZCVvT4uSMv_TNps

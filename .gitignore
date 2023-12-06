@@ -5,3 +5,4 @@ node_modules
 .performance_results_todos.test.csv
 .performance_results_projectsidtasksid.test.csv
 .performance_results_todosidtasksofid.test.csv
+.sonar-project-properties

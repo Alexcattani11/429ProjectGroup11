@@ -1,4 +1,10 @@
 Test Name,Duration (ms),Status Code,Object Count
+<<<<<<< HEAD
 DELETE taskof with valid IDs,271,404,1
 DELETE no tasks invalid project ID,352,404,1
 DELETE no tasks invalid todo ID,312,404,1
+=======
+DELETE taskof with valid IDs,2,404,1
+DELETE no tasks invalid project ID,1,404,1
+DELETE no tasks invalid todo ID,1,404,1
+>>>>>>> 724541f8 (Combine repo)

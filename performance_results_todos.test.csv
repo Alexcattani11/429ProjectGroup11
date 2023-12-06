@@ -1,4 +1,5 @@
 Test Name,Duration (ms),Status Code,Object Count
+<<<<<<< HEAD
 GET all todos,2209,200,1
 GET created todo,1759,200,1
 POST new todo,2,201,1
@@ -25,3 +26,31 @@ PUT update multiple TODO fields,20,200,1
 DELETE TODO,93,200,1
 DELETE confirmation TODO,262,404,1
 DELETE TODO invalid,272,404,1
+=======
+GET all todos,1,200,1
+GET created todo,1,200,1
+POST new todo,1,201,1
+POST todo with all params,1,201,1
+POST invalid ID todo,0,400,1
+POST invalid done status TODO,1,400,1
+POST update TODO title,1,201,1
+POST update TODO done status,1,200,1
+POST update TODO description,1,200,1
+POST update TODO ID,1,200,1
+POST not update TODO ID,1,400,1
+POST not update TODO title,1,400,1
+POST not update TODO done status,1,400,1
+POST update multiple TODO fields,0,200,1
+PUT update TODO title,1,200,1
+PUT update TODO done status,1,200,1
+PUT update TODO description,1,200,1
+PUT update TODO ID,1,200,1
+PUT not update TODO ID,1,400,1
+PUT not update TODO title,1,400,1
+PUT not update TODO without title,1,400,1
+PUT not update TODO done status,0,400,1
+PUT update multiple TODO fields,0,200,1
+DELETE TODO,0,200,1
+DELETE confirmation TODO,1,404,1
+DELETE TODO invalid,1,404,1
+>>>>>>> 724541f8 (Combine repo)
